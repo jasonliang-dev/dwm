@@ -1,0 +1,4 @@
+dwm
+*.o
+*.tar.xz
+patches
