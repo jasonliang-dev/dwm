@@ -1,6 +1,10 @@
 # dwm
 
-No mainline patches, but a change was made to run a command on startup:
+## Patches
+
+- [fullgaps](https://dwm.suckless.org/patches/fullgaps/)
+
+Plus, a small patch was made to run a command on startup:
 
 ```diff
 // config.h
