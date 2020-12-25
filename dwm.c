@@ -28,6 +28,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <fcntl.h>
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <X11/cursorfont.h>
@@ -390,8 +391,9 @@ arrange(Monitor *m)
 	if (m) {
 		arrangemon(m);
 		restack(m);
-	} else for (m = mons; m; m = m->next)
+	} else for (m = mons; m; m = m->next){
 		arrangemon(m);
+	}
 }
 
 void
@@ -699,17 +701,16 @@ dirtomon(int dir)
 void
 drawbar(Monitor *m)
 {
-	int x, w, sw = 0;
-	int boxs = drw->fonts->h / 9;
-	int boxw = drw->fonts->h / 6 + 2;
 	unsigned int i, occ = 0, urg = 0;
+	int fd;
 	Client *c;
+	char str[1000]="";
 
-	/* draw status first so it can be overdrawn by tags later */
-	if (m == selmon) { /* status is only drawn on selected monitor */
-		drw_setscheme(drw, scheme[SchemeNorm]);
-		sw = TEXTW(stext) - lrpad + 2; /* 2px right padding */
-		drw_text(drw, m->ww - sw, 0, sw, bh, 0, stext, 0);
+	mkfifo(tagfifo, 0666);
+	fd = open(tagfifo, O_WRONLY | O_NONBLOCK);
+
+	if (fd == -1) {
+		return;
 	}
 
 	for (c = m->clients; c; c = c->next) {
@@ -717,33 +718,38 @@ drawbar(Monitor *m)
 		if (c->isurgent)
 			urg |= c->tags;
 	}
-	x = 0;
 	for (i = 0; i < LENGTH(tags); i++) {
-		w = TEXTW(tags[i]);
-		drw_setscheme(drw, scheme[m->tagset[m->seltags] & 1 << i ? SchemeSel : SchemeNorm]);
-		drw_text(drw, x, 0, w, bh, lrpad / 2, tags[i], urg & 1 << i);
-		if (occ & 1 << i)
-			drw_rect(drw, x + boxs, boxs, boxw, boxw,
-				m == selmon && selmon->sel && selmon->sel->tags & 1 << i,
-				urg & 1 << i);
-		x += w;
-	}
-	w = blw = TEXTW(m->ltsymbol);
-	drw_setscheme(drw, scheme[SchemeNorm]);
-	x = drw_text(drw, x, 0, w, bh, lrpad / 2, m->ltsymbol, 0);
+		strcat(str,sepchar);
 
-	if ((w = m->ww - sw - x) > bh) {
-		if (m->sel) {
-			drw_setscheme(drw, scheme[m == selmon ? SchemeSel : SchemeNorm]);
-			drw_text(drw, x, 0, w, bh, lrpad / 2, m->sel->name, 0);
-			if (m->sel->isfloating)
-				drw_rect(drw, x + boxs, boxs, boxw, boxw, m->sel->isfixed, 0);
+		if (occ & 1 << i && m->tagset[m->seltags] & 1 << i) {
+			strcat(str,"%O ");
+			strcat(str,tags[i]);
+			strcat(str," %f");
+		} else if (!(occ & 1 << i) && m->tagset[m->seltags] & 1 << i) {
+			strcat(str,"%E ");
+			strcat(str,tags[i]);
+			strcat(str," %f");
+		} else if (occ & 1 << i && !(m->tagset[m->seltags] & 1 << i)) {
+			strcat(str,"%o ");
+			strcat(str,tags[i]);
+			strcat(str," %f");
 		} else {
-			drw_setscheme(drw, scheme[SchemeNorm]);
-			drw_rect(drw, x, 0, w, bh, 1, 1);
+			strcat(str,"%e ");
+			strcat(str,tags[i]);
+			strcat(str," %f");
 		}
 	}
-	drw_map(drw, m->barwin, 0, 0, m->ww, bh);
+	strcat(str,sepchar);
+	strcat(str,m->ltsymbol);
+	if(m->sel){
+		strcat(str,sepchar);
+		strcat(str,m->sel->name);
+	}
+	strcat(str,"\n");
+	if (write(fd,&str,strlen(str)+1)) {
+		fprintf(stderr, "cannot write to tagfifo (aka '%s')", tagfifo);
+	}
+	close(fd);
 }
 
 void
@@ -1351,11 +1357,11 @@ resizemouse(const Arg *arg)
 void
 restack(Monitor *m)
 {
+  fprintf(stderr, "restack(m)\n");
 	Client *c;
 	XEvent ev;
 	XWindowChanges wc;
 
-	drawbar(m);
 	if (!m->sel)
 		return;
 	if (m->sel->isfloating || !m->lt[m->sellt]->arrange)
@@ -1559,7 +1565,7 @@ setup(void)
 	if (!drw_fontset_create(drw, fonts, LENGTH(fonts)))
 		die("no fonts could be loaded.");
 	lrpad = drw->fonts->h;
-	bh = drw->fonts->h + 2;
+ 	bh = barheight;
 	updategeom();
 	/* init atoms */
 	utf8string = XInternAtom(dpy, "UTF8_STRING", False);
@@ -1818,18 +1824,10 @@ void
 updatebars(void)
 {
 	Monitor *m;
-	XSetWindowAttributes wa = {
-		.override_redirect = True,
-		.background_pixmap = ParentRelative,
-		.event_mask = ButtonPressMask|ExposureMask
-	};
 	XClassHint ch = {"dwm", "dwm"};
 	for (m = mons; m; m = m->next) {
 		if (m->barwin)
 			continue;
-		m->barwin = XCreateWindow(dpy, root, m->wx, m->by, m->ww, bh, 0, DefaultDepth(dpy, screen),
-				CopyFromParent, DefaultVisual(dpy, screen),
-				CWOverrideRedirect|CWBackPixmap|CWEventMask, &wa);
 		XDefineCursor(dpy, m->barwin, cursor[CurNormal]->cursor);
 		XMapRaised(dpy, m->barwin);
 		XSetClassHint(dpy, m->barwin, &ch);

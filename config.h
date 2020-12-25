@@ -3,12 +3,15 @@
 #include "base16.h"
 
 /* appearance */
-static const unsigned int borderpx  = 2;        /* border pixel of windows */
+static const unsigned int borderpx  = 0;        /* border pixel of windows */
 static const unsigned int gappx     = 20;       /* gaps between windows */
 static const unsigned int snap      = 32;       /* snap pixel */
-static const int showbar            = 1;        /* 0 means no bar */
+static const int showbar            = 0;        /* 0 means no bar */
 static const int topbar             = 1;        /* 0 means bottom bar */
-static const char *fonts[]          = { "Source Sans Pro:size=10" };
+static const char *tagfifo          = "/tmp/dwm_tags"; /*fifo of bar information */
+static const unsigned int barheight = 25;       /* height of bar */
+static const char *sepchar          = ":";
+static const char *fonts[]          = { "Source Sans Pro:size=12" };
 static const char *colors[][3]      = {
 	/*               fg                    bg                    border */
 	[SchemeNorm] = { base16onedark.base05, base16onedark.base00, base16onedark.base00 },
@@ -112,8 +115,8 @@ static Key keys[] = {
 	TAGKEYS(              XK_9,                                     8),
 	{ MODKEY|ShiftMask,   XK_x,                     quit,           {0} },
 	{ MODKEY,             XK_g,                     setgaps,        {.i = 0 } },
-	{ MODKEY|ControlMask, XK_g,                     setgaps,        {.i = -2 } },
-	{ MODKEY|ShiftMask,   XK_g,                     setgaps,        {.i = +2 } },
+	{ MODKEY|ControlMask, XK_g,                     setgaps,        {.i = -5 } },
+	{ MODKEY|ShiftMask,   XK_g,                     setgaps,        {.i = +5 } },
 	{ 0,                  XF86XK_AudioRaiseVolume,  spawn,          {.v = volup } },
 	{ 0,                  XF86XK_AudioLowerVolume,  spawn,          {.v = voldown } },
 	{ 0,                  XF86XK_AudioMute,         spawn,          {.v = volmute } },
