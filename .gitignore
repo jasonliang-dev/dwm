@@ -1,4 +1,5 @@
 dwm
+dwm-msg
 *.o
 *.tar.xz
 patches
