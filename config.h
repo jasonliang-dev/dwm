@@ -80,6 +80,7 @@ static const char *brightup[] = {"xbacklight", "+5", NULL};
 static const char *brightdown[] = {"xbacklight", "-5", NULL};
 
 static const char *screenshot[] = {"/bin/bash", "-c", "~/scripts/screenshot.sh", NULL};
+static const char *screenshotregion[] = {"/bin/bash", "-c", "~/scripts/screenshot.sh region", NULL};
 
 static Key keys[] = {
 	/* modifier           key                       function        argument */
@@ -124,6 +125,7 @@ static Key keys[] = {
 	{ 0,                  XF86XK_MonBrightnessUp,   spawn,          {.v = brightup } },
 	{ 0,                  XF86XK_MonBrightnessDown, spawn,          {.v = brightdown } },
 	{ 0,                  XK_Print,                 spawn,          {.v = screenshot } },
+	{ ControlMask,        XK_Print,                 spawn,          {.v = screenshotregion } },
 };
 
 /* button definitions */
