@@ -1,9 +1,13 @@
 # dwm
 
+## Building
+
+`yajl` is required.
+
 ## Patches
 
 - [fullgaps](https://dwm.suckless.org/patches/fullgaps/)
-- [script_tags](https://dwm.suckless.org/patches/script_tags/) (with fifo removed for ipc)
+- [script_tags](https://dwm.suckless.org/patches/script_tags/) with fifo removed for ipc. What remains is a toggleable area for the bar.
 - [dwm-ipc](https://github.com/mihirlad55/dwm-ipc)
 
 Plus, a small patch was made to run a command on startup:

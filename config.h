@@ -3,17 +3,18 @@
 #include "base16.h"
 
 /* appearance */
-static const unsigned int borderpx  = 0;        /* border pixel of windows */
-static const unsigned int gappx     = 20;       /* gaps between windows */
-static const unsigned int snap      = 10;       /* snap pixel */
-static const int showbar            = 0;        /* 0 means no bar */
-static const int topbar             = 1;        /* 0 means bottom bar */
-static const unsigned int barheight = 25;       /* height of bar */
-static const char *fonts[]          = { "Source Sans Pro:size=12" };
-static const char *colors[][3]      = {
-	/*               fg                    bg                    border */
-	[SchemeNorm] = { base16onedark.base05, base16onedark.base00, base16onedark.base00 },
-	[SchemeSel]  = { base16onedark.base07, base16onedark.base01, base16onedark.base07 },
+static const unsigned int borderpx    = 0;          /* border pixel of windows */
+static const unsigned int gappx       = 20;         /* gaps between windows */
+static const unsigned int snap        = 10;         /* snap pixel */
+static const int showbar              = 1;          /* 0 means no bar */
+static const int topbar               = 1;          /* 0 means bottom bar */
+static const unsigned int barheight   = gappx + 30; /* height of bar */
+static const char *fonts[]            = { "Source Sans Pro:size=12" };
+static const Base16Colors base16theme = base16gruvboxdarkmedium;
+static const char *colors[][3]        = {
+	/*               fg                  bg                  border */
+	[SchemeNorm] = { base16theme.base05, base16theme.base00, base16theme.base00 },
+	[SchemeSel]  = { base16theme.base07, base16theme.base01, base16theme.base07 },
 };
 
 /* tagging */
@@ -61,11 +62,11 @@ static const char *dmenucmd[] = { /* requires custom build of dmenu */
 	"-bw", "60",
 	"-fn", "Source Sans Pro:size=12",
 	"-m",  dmenumon,
-	"-nb", base16onedark.base01,
-	"-nf", base16onedark.base05,
-	"-sb", base16onedark.base02,
-	"-sf", base16onedark.base07,
-	"-bc", base16onedark.base01,
+	"-nb", base16theme.base01,
+	"-nf", base16theme.base05,
+	"-sb", base16theme.base02,
+	"-sf", base16theme.base07,
+	"-bc", base16theme.base01,
 	NULL
 };
 
@@ -73,12 +74,12 @@ static const char *termcmd[]  = { "st", NULL };
 
 static const char *volup[] = {"pactl", "set-sink-volume", "@DEFAULT_SINK@", "+2%", NULL};
 static const char *voldown[] = {"pactl", "set-sink-volume", "@DEFAULT_SINK@", "-2%", NULL};
-static const char *volmute[] = {"pactl", "set-sink-volume", "@DEFAULT_SINK@", "toggle", NULL};
+static const char *volmute[] = {"pactl", "set-sink-mute", "@DEFAULT_SINK@", "toggle", NULL};
 
 static const char *brightup[] = {"xbacklight", "+5", NULL};
 static const char *brightdown[] = {"xbacklight", "-5", NULL};
 
-static const char *screenshot[] = {"screenshot.sh", NULL};
+static const char *screenshot[] = {"/bin/bash", "-c", "~/scripts/screenshot.sh", NULL};
 
 static Key keys[] = {
 	/* modifier           key                       function        argument */
