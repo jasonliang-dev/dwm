@@ -9,7 +9,7 @@ static const unsigned int snap        = 10;         /* snap pixel */
 static const int showbar              = 1;          /* 0 means no bar */
 static const int topbar               = 1;          /* 0 means bottom bar */
 static const unsigned int barheight   = gappx + 30; /* height of bar */
-static const char *fonts[]            = { "Source Sans Pro:size=12" };
+static const char *fonts[]            = { "Roboto Mono:size=12" };
 static const Base16Colors base16theme = base16gruvboxdarkmedium;
 static const char *colors[][3]        = {
 	/*               fg                  bg                  border */
@@ -25,8 +25,8 @@ static const Rule rules[] = {
 	 *	WM_CLASS(STRING) = instance, class
 	 *	WM_NAME(STRING) = title
 	 */
-	/* class      instance    title       tags mask     isfloating   monitor */
-	{ NULL,       NULL,       NULL,       0,            0,           -1 },
+	/* class  instance  title  tags mask  iscentered,  isfloating  monitor */
+	{ NULL,   NULL,     NULL,  0,         0,           0,          -1 },
 };
 
 /* layout(s) */

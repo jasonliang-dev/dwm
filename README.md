@@ -6,6 +6,7 @@
 
 ## Patches
 
+- [center](https://dwm.suckless.org/patches/center/)
 - [fullgaps](https://dwm.suckless.org/patches/fullgaps/)
 - [script_tags](https://dwm.suckless.org/patches/script_tags/) with fifo removed for ipc. What remains is a toggleable area for the bar.
 - [dwm-ipc](https://github.com/mihirlad55/dwm-ipc)
